@@ -7,9 +7,7 @@
 <body>
     <div>
         {% if user is defined %}
-            <h1>This is simple web application developed by {{ user }}</h1>
-        {% else %}
-            <h1>This is simple web application</h1>
+            <h1>Welcome {{ user }}</h1>
         {% endif %}
     </div>
     {% if error is defined %}
