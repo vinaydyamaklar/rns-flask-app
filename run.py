@@ -1,48 +1,50 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 import sqlite3 as sql
 
 
 app = Flask(__name__)
 
 
-@app.route("/")
-def hello_method():
+@app.route("/hello_world")
+def hello_world():
     return "<h1>Hello, Welcome to Flask World</h1>"
 
 
-@app.route("/user/",  methods=['GET', 'POST'])
-def hello_user():
+@app.route("/")
+def index():
+    return send_from_directory('static', 'index.html')
+
+
+@app.route("/home",  methods=['GET'])
+def home():
     user = request.args.get('name')
-    return render_template('index.html', user=user)
+    return render_template('home.html', user=user)
 
 
-@app.route("/productcreate/", methods=['GET', 'POST'])
+@app.route("/productcreate", methods=['POST'])
 def product_create():
-    if request.method == 'POST':
-        product_name = request.form['product_name']
-        product_price = request.form['product_price']
-        if product_name.strip() is None and product_price.strip() is None:
-            return render_template('index.html', error="Product name and price are mandatory")
-        else:
-            try:
-                with sql.connect("database.db") as con:
-                    cur = con.cursor()
-                    cur.execute("create table if not exists products (name TEXT, price INT)")
-                    cur.execute("INSERT INTO products (name,price)"
-                                "VALUES (?,?)", (product_name, product_price))
-                    con.commit()
-                    msg = "Record saved successfully"
-            except:
-                con.rollback()
-                msg = "Error in inserting record"
-            finally:
-                con.close()
-                return render_template("index.html", msg=msg)
+    product_name = request.form['product_name']
+    product_price = request.form['product_price']
+    if product_name.strip() is None and product_price.strip() is None:
+        return render_template('home.html', error="Product name and price are mandatory")
     else:
-        return render_template('index.html')
+        try:
+            with sql.connect("database.db") as con:
+                cur = con.cursor()
+                cur.execute("create table if not exists products (name TEXT, price INT)")
+                cur.execute("INSERT INTO products (name,price)"
+                            "VALUES (?,?)", (product_name, product_price))
+                con.commit()
+                msg = "Record saved successfully"
+        except:
+            con.rollback()
+            msg = "Error in inserting record"
+        finally:
+            con.close()
+            return render_template("home.html", msg=msg)
 
 
-@app.route("/productlist/", methods=['GET', 'POST'])
+@app.route("/productlist", methods=['GET'])
 def product_list():
     con = sql.connect("database.db")
     con.row_factory = sql.Row
@@ -52,16 +54,6 @@ def product_list():
 
     rows = cur.fetchall()
     return render_template("product_list.html", rows=rows)
-
-
-@app.route("/productupdate/", methods=['GET', 'POST'])
-def product_update():
-    pass
-
-
-@app.route("/productdelete/", methods=['GET', 'POST'])
-def product_delete():
-    pass
 
 
 if __name__ == "__main__":

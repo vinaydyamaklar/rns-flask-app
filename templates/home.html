@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User</title>
+</head>
+<body>
+    <div>
+        {% if user is defined %}
+            <h1>This is simple web application developed by {{ user }}</h1>
+        {% else %}
+            <h1>This is simple web application</h1>
+        {% endif %}
+    </div>
+    {% if error is defined %}
+        <div>
+            <h1>{{ error }}</h1>
+        </div>
+    {% endif %}
+    <div>
+        <form action="/productcreate" method="post">
+            <label>Enter the product name:</label><br>
+            <input name="product_name" type="text"/>
+            <br><br>
+            <label>Enter Price:</label><br>
+            <input name="product_price" type="text"/>
+            <br><br>
+            <input type="submit" value="Save">
+        </form>
+    </div>
+    <h4><a href = "/productlist">View all products</a></h4>
+    <h4><a href = "/">Index page</a></h4>
+    <div>{{ msg }}</div>
+</body>
+</html>
